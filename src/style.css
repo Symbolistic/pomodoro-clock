@@ -82,6 +82,7 @@
 
 #session-length {
     grid-area: sessionLength;
+    font-size: 40px;
 
 }
 

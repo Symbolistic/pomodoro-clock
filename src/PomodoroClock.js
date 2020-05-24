@@ -1,7 +1,4 @@
 import React from 'react'
-import { FiRefreshCw } from "react-icons/fi";
-import { GrPlayFill } from "react-icons/gr";
-
 
 
 class PomodoroClock extends React.Component {
@@ -15,7 +12,7 @@ class PomodoroClock extends React.Component {
             currSessionMinutes: 25,
             currSessionSeconds: 0,
             currBreakSeconds: 0,
-            timeLeft: '',
+            timeLeft: '25:00',
             currentLabel: 'Session',
             isPaused: true
         }
@@ -24,10 +21,14 @@ class PomodoroClock extends React.Component {
         this.handleIncrement = this.handleIncrement.bind(this);
         this.startStopTimer = this.startStopTimer.bind(this);
         this.convertTimeFormat = this.convertTimeFormat.bind(this);
+
+        this.sound = React.createRef()
     }
 
     // Reset them ALL!!!!!!
     handleReset() {
+        this.sound.current.pause();
+        this.sound.current.currentTime = 0;
         this.setState({
             isPaused: true,
             breakLength: 5, 
@@ -91,6 +92,7 @@ class PomodoroClock extends React.Component {
 
     // This will stop that timer IN ITS TRACKS...... it will also start it........ IN ITS TRACKS!
     startStopTimer () {
+
         this.setState(prevState => {
 
             if (prevState.isPaused === false) {
@@ -126,30 +128,41 @@ class PomodoroClock extends React.Component {
             // We only begin once the countdown IS NOT PAUSED.
              if (this.state.isPaused === false) {
 
-                 // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
-          /*  if ( this.state.currBreakMinutes === 0 && this.state.currBreakSeconds === 0 ) { 
-                this.setState({
-                    currentLabel:"Session",
-                    currBreakMinutes: this.state.breakLength,
-                    currSessionMinutes: this.state.sessionLength,
-                    currSessionSeconds: 0,
-                    currBreakSeconds: 0,
-                })
-            } else if ( this.state.currSessionMinutes === 0 && this.state.currSessionSeconds === 0 ) { 
-            
-                this.setState({currentLabel: "Break", currSessionMinutes: 0, currSessionSeconds:0})
-            } 
-            */
-         
-
-
+    
                  
                 // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
                 let minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
                 let seconds = this.state.currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
+                
+                if ( minutes === 0 && seconds === 0 ) { 
+                    if (this.state.currentLabel === "Session") {
+                        this.setState({
+                            currentLabel: "Break",
+                            currBreakMinutes: this.state.breakLength,
+                            currSessionMinutes: 0,
+                            currSessionSeconds: 0,
+                            currBreakSeconds: 0,
+                            //timeLeft: '00:00',
+                        })
+                    } else {   // If we finished break, reset our countdown values and start again from session.          
+                        this.setState({
+                            currentLabel:"Session",
+                            currBreakMinutes: this.state.breakLength,
+                            currSessionMinutes: this.state.sessionLength,
+                            currSessionSeconds: 0,
+                            currBreakSeconds: 0,
+                            //timeLeft: '00:00',
+                        })
+                    }
+                 }
+            
+                  // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
+                 minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
+                seconds = this.state.currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
+                
 
                 // If seconds is less or equal to 0, make it 59.
-                 if ( seconds <= 0 ) {
+                 if ( seconds === 0 ) {
                     minutes = minutes - 1;
                     seconds = 59;
                 } else { // If its more than 0, reduce by 1.
@@ -169,19 +182,9 @@ class PomodoroClock extends React.Component {
                 }
 
                 // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
-                if ( minutes === 0 && seconds === 0 ) { 
-                    if (this.state.currentLabel === "Session") {
-                        this.setState({currentLabel: "Break"})
-                    } else {                // If we finished break, reset our countdown values and start again from session.
-                        this.setState({
-                            currentLabel:"Session",
-                            currBreakMinutes: this.state.breakLength,
-                            currSessionMinutes: this.state.sessionLength,
-                            currSessionSeconds: 0,
-                            currBreakSeconds: 0,
-                        })
-                    }
-                 } 
+                 if ( minutes === 0 && seconds === 0 ) {
+                    this.sound.current.play();
+                 }
             }    
         }, 1000);  
     }
@@ -194,6 +197,7 @@ class PomodoroClock extends React.Component {
     
 
     render() {
+        console.log(this.convertTimeFormat())
 
         return (
             <div id='grid-container'>
@@ -220,6 +224,8 @@ class PomodoroClock extends React.Component {
                     <button size="4em" id="start_stop" onClick={this.startStopTimer}>Start/Stop</button>
                     <button size ='4em' id="reset" onClick={this.handleReset}>RESET</button>
                 </div>
+
+                <audio id="beep" ref={this.sound} src="http://www.peter-weinberg.com/files/1014/8073/6015/BeepSound.wav"></audio>
             </div>
         )
     }
