@@ -6,10 +6,9 @@ class PomodoroClock extends React.Component {
         this.state = {
             breakLength: 5,
             sessionLength: 25,
-            currBreakMinutes: 5,
-            currSessionMinutes: 25,
+            currMinutes: 0,
             currSeconds: 0,
-            timeLeft: 25,
+            timeLeft: '',
             currentLabel: 'Session',
             isPaused: false
         }
@@ -39,8 +38,8 @@ class PomodoroClock extends React.Component {
                 this.setState (prevState => {
                     return {
                         sessionLength: prevState.sessionLength - 1,    
-                        currSessionMinutes: prevState.currSessionMinutes -1,
-                        currSeconds: 0,
+                        currMinutes: prevState.currMinutes -1,
+                        currSeconds: prevState.currSeconds - prevState.currSeconds
                     }
                 }) 
             }
@@ -76,13 +75,22 @@ class PomodoroClock extends React.Component {
     }
 
     componentDidMount () {
-        let minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
-        let seconds = this.state.currSeconds;
-        let timer;
+    
+        
+        let currSessionMinutes = this.state.sessionLength;
+        let currBreakMinutes = this.state.breakLength;
+
+        let minutes = this.state.currentLabel === "Session" ? currSessionMinutes : currBreakMinutes;
 
         setInterval(() => {
+            
 
              if (this.state.isPaused === false) {
+
+                let seconds = this.state.currSeconds;
+                let timer; 
+
+
 
                 if ( seconds <= 0 ) {
                     minutes = minutes - 1;
@@ -95,19 +103,18 @@ class PomodoroClock extends React.Component {
                 seconds = seconds < 10 ? "0" + seconds : seconds;
                 timer = minutes + ':' + seconds
 
-                this.setState (prevState => {
-                    return {
+                this.setState ({
                         timeLeft: timer,
-                        currSessionMinutes: minutes,
+                        currMinutes: minutes,
                         currSeconds: seconds
-                    }
-                })
+                    })
             }    
-        }, 1000);
+        }, 1000);  
     }
     
 
     render() {
+
         return (
             <div className='grid-container'>
                 
