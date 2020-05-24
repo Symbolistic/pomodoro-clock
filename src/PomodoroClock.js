@@ -127,7 +127,7 @@ class PomodoroClock extends React.Component {
              if (this.state.isPaused === false) {
 
                  // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
-            if ( this.state.currBreakMinutes === 0 && this.state.currBreakSeconds === 0 ) { 
+          /*  if ( this.state.currBreakMinutes === 0 && this.state.currBreakSeconds === 0 ) { 
                 this.setState({
                     currentLabel:"Session",
                     currBreakMinutes: this.state.breakLength,
@@ -138,11 +138,13 @@ class PomodoroClock extends React.Component {
             } else if ( this.state.currSessionMinutes === 0 && this.state.currSessionSeconds === 0 ) { 
             
                 this.setState({currentLabel: "Break", currSessionMinutes: 0, currSessionSeconds:0})
-            }
+            } 
+            */
          
 
 
-                 // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
+                 
+                // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
                 let minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
                 let seconds = this.state.currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
 
@@ -166,7 +168,7 @@ class PomodoroClock extends React.Component {
                     })
                 }
 
-          /*      // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
+                // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
                 if ( minutes === 0 && seconds === 0 ) { 
                     if (this.state.currentLabel === "Session") {
                         this.setState({currentLabel: "Break"})
@@ -179,7 +181,7 @@ class PomodoroClock extends React.Component {
                             currBreakSeconds: 0,
                         })
                     }
-                 } */
+                 } 
             }    
         }, 1000);  
     }
@@ -192,7 +194,6 @@ class PomodoroClock extends React.Component {
     
 
     render() {
-
 
         return (
             <div id='grid-container'>
@@ -216,8 +217,8 @@ class PomodoroClock extends React.Component {
                 <div id="timer">
                     <div id="timer-label">{this.state.currentLabel}</div>
                     <div id="time-left">{this.convertTimeFormat()}</div>
-                    <GrPlayFill size="4em" id="start_stop" onClick={this.startStopTimer}>Start/Stop</GrPlayFill>
-                    <FiRefreshCw size ='4em' id="reset" onClick={this.handleReset}>RESET</FiRefreshCw>
+                    <button size="4em" id="start_stop" onClick={this.startStopTimer}>Start/Stop</button>
+                    <button size ='4em' id="reset" onClick={this.handleReset}>RESET</button>
                 </div>
             </div>
         )
