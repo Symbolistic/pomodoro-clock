@@ -16,6 +16,7 @@ class PomodoroClock extends React.Component {
         this.handleDecrement = this.handleDecrement.bind(this);
         this.handleIncrement = this.handleIncrement.bind(this);
         this.startStopTimer = this.startStopTimer.bind(this);
+        this.convertTimeFormat = this.convertTimeFormat.bind(this);
     }
 
     handleReset() {
@@ -28,7 +29,6 @@ class PomodoroClock extends React.Component {
                 this.setState (prevState => {
                     return {
                         breakLength: prevState.breakLength - 1,
-                        currBreakMinutes: prevState.currBreakMinutes -1
                     }
                 }) 
             }
@@ -38,8 +38,6 @@ class PomodoroClock extends React.Component {
                 this.setState (prevState => {
                     return {
                         sessionLength: prevState.sessionLength - 1,    
-                        currMinutes: prevState.currMinutes -1,
-                        currSeconds: prevState.currSeconds - prevState.currSeconds
                     }
                 }) 
             }
@@ -74,21 +72,31 @@ class PomodoroClock extends React.Component {
         })
     }
 
-    componentDidMount () {
-    
+     convertTimeFormat() {
+        let minutes = this.state.currMinutes;
+        let seconds = this.state.currSeconds;
         
-        let currSessionMinutes = this.state.sessionLength;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        let timer = minutes + ':' + seconds
+
+        console.log(timer);
+    }
+
+    componentDidMount () {
+        
+        setInterval(() => {
+
+            let currSessionMinutes = this.state.sessionLength;
         let currBreakMinutes = this.state.breakLength;
 
         let minutes = this.state.currentLabel === "Session" ? currSessionMinutes : currBreakMinutes;
 
-        setInterval(() => {
+        let seconds = this.state.currSeconds;
             
 
              if (this.state.isPaused === false) {
 
-                let seconds = this.state.currSeconds;
-                let timer; 
 
 
 
@@ -99,18 +107,15 @@ class PomodoroClock extends React.Component {
                     seconds = seconds - 1;
                 }
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                timer = minutes + ':' + seconds
-
                 this.setState ({
-                        timeLeft: timer,
                         currMinutes: minutes,
                         currSeconds: seconds
                     })
             }    
         }, 1000);  
     }
+
+
     
 
     render() {
@@ -136,7 +141,7 @@ class PomodoroClock extends React.Component {
                 
                 <div id="timer">
                     <div id="timer-label">{this.state.currentLabel}</div>
-                    <div id="time-left">{this.state.timeLeft}</div>
+                    <div id="time-left">{this.convertTimeFormat()}</div>
                     <button id="start_stop" onClick={this.startStopTimer}>Start/Stop</button>
                     <button id="reset" onClick={this.handleReset}>RESET</button>
                 </div>
