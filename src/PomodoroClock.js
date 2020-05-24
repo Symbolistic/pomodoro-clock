@@ -37,7 +37,7 @@ class PomodoroClock extends React.Component {
             if (this.state.sessionLength > 1) { // This makes sure we can't go lower than 1 minute session time
                 this.setState (prevState => {
                     return {
-                        sessionLength: prevState.sessionLength - 1,    
+                        sessionLength: prevState.sessionLength - 1,
                     }
                 }) 
             }
@@ -73,31 +73,27 @@ class PomodoroClock extends React.Component {
     }
 
      convertTimeFormat() {
-        let minutes = this.state.currMinutes;
         let seconds = this.state.currSeconds;
+        let minutes = this.state.currMinutes;
         
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         let timer = minutes + ':' + seconds
 
-        console.log(timer);
+        return timer;
     }
 
     componentDidMount () {
+        this.setState({currMinutes:this.state.sessionLength})
         
-        setInterval(() => {
-
-            let currSessionMinutes = this.state.sessionLength;
-        let currBreakMinutes = this.state.breakLength;
-
-        let minutes = this.state.currentLabel === "Session" ? currSessionMinutes : currBreakMinutes;
-
-        let seconds = this.state.currSeconds;
-            
+        this.countDown = setInterval(() => {
+        
 
              if (this.state.isPaused === false) {
-
-
+                let currSessionMinutes = this.state.sessionLength;
+                let currBreakMinutes = this.state.breakLength;
+                let minutes = this.state.currentLabel === "Session" ? currSessionMinutes : currBreakMinutes;
+                let seconds = this.state.currSeconds;
 
 
                 if ( seconds <= 0 ) {
@@ -113,6 +109,10 @@ class PomodoroClock extends React.Component {
                     })
             }    
         }, 1000);  
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.countDown)
     }
 
 
@@ -151,3 +151,5 @@ class PomodoroClock extends React.Component {
 }
 
 export default PomodoroClock
+
+//
