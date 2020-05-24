@@ -136,22 +136,28 @@ class PomodoroClock extends React.Component {
                 
                 if ( minutes === 0 && seconds === 0 ) { 
                     if (this.state.currentLabel === "Session") {
+                        let breakMins = this.state.breakLength < 10 ? "0" + this.state.breakLength : this.state.breakLength; // Convert dem minutes
+                        
+                        let timer = breakMins + ':' + 0 + '0'; 
                         this.setState({
                             currentLabel: "Break",
                             currBreakMinutes: this.state.breakLength,
-                            currSessionMinutes: 0,
+                            currSessionMinutes: this.state.sessionLength,
                             currSessionSeconds: 0,
                             currBreakSeconds: 0,
-                            //timeLeft: '00:00',
+                            timeLeft: timer,
                         })
-                    } else {   // If we finished break, reset our countdown values and start again from session.          
+                    } else {   // If we finished break, reset our countdown values and start again from session.    
+                        let sessMins = this.state.sessionLength < 10 ? "0" + this.state.sessionLength : this.state.sessionLength; // Convert dem minutes
+                        
+                        let timer = sessMins + ':' + 0 + '0';       
                         this.setState({
                             currentLabel:"Session",
                             currBreakMinutes: this.state.breakLength,
                             currSessionMinutes: this.state.sessionLength,
                             currSessionSeconds: 0,
                             currBreakSeconds: 0,
-                            //timeLeft: '00:00',
+                            timeLeft: timer,
                         })
                     }
                  }
@@ -184,7 +190,7 @@ class PomodoroClock extends React.Component {
                 // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
                  if ( minutes === 0 && seconds === 0 ) {
                     this.sound.current.play();
-                 }
+                 }     
             }    
         }, 1000);  
     }
