@@ -1,5 +1,6 @@
 import React from 'react'
-
+import countdown from './countdown.mp4'
+import clock from './clock.gif'
 
 class PomodoroClock extends React.Component {
     constructor() {
@@ -12,17 +13,27 @@ class PomodoroClock extends React.Component {
             currSessionMinutes: 25,
             currSessionSeconds: 0,
             currBreakSeconds: 0,
-            timeLeft: '25:00',
             currentLabel: 'Session',
-            isPaused: true
+            isPaused: true,
+            hide: true
         }
         this.handleReset = this.handleReset.bind(this);
         this.handleDecrement = this.handleDecrement.bind(this);
         this.handleIncrement = this.handleIncrement.bind(this);
         this.startStopTimer = this.startStopTimer.bind(this);
         this.convertTimeFormat = this.convertTimeFormat.bind(this);
+        this.hideDisplay = this.hideDisplay.bind(this);
 
-        this.sound = React.createRef()
+        this.sound = React.createRef();
+        this.video = React.createRef();
+    }
+
+    hideDisplay() {
+        if (this.state.hide){
+            return {display:'none'}
+        } else {
+            return {display:'initial'}
+        }
     }
 
     // Reset them ALL!!!!!!
@@ -92,7 +103,7 @@ class PomodoroClock extends React.Component {
 
     // This will stop that timer IN ITS TRACKS...... it will also start it........ IN ITS TRACKS!
     startStopTimer () {
-
+    
         this.setState(prevState => {
 
             if (prevState.isPaused === false) {
@@ -121,76 +132,70 @@ class PomodoroClock extends React.Component {
 
     componentDidMount () {
         // Set the current session and break minutes. We don't worry about seconds since they start off as 0.
-        this.setState({currSessionMinutes: this.state.sessionLength, currBreakMinutes: this.state.breakLength})
+        //this.setState({currSessionMinutes: this.state.sessionLength, currBreakMinutes: this.state.breakLength})
         
         this.countDown = setInterval(() => {
 
             // We only begin once the countdown IS NOT PAUSED.
              if (this.state.isPaused === false) {
+                let currentLabel = this.state.currentLabel;
+                let hide = this.state.hide;
 
-    
-                 
                 // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
-                let minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
-                let seconds = this.state.currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
+                let minutes = currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
+                let seconds = currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
+                let breakLength = this.state.breakLength;
+                let sessionLength = this.state.sessionLength;
                 
-                if ( minutes === 0 && seconds === 0 ) { 
-                    if (this.state.currentLabel === "Session") {
-                        let breakMins = this.state.breakLength < 10 ? "0" + this.state.breakLength : this.state.breakLength; // Convert dem minutes
-                        
-                        let timer = breakMins + ':' + 0 + '0'; 
-                        this.setState({
-                            currentLabel: "Break",
-                            currBreakMinutes: this.state.breakLength,
-                            currSessionMinutes: this.state.sessionLength,
-                            currSessionSeconds: 0,
-                            currBreakSeconds: 0,
-                            timeLeft: timer,
-                        })
-                    } else {   // If we finished break, reset our countdown values and start again from session.    
-                        let sessMins = this.state.sessionLength < 10 ? "0" + this.state.sessionLength : this.state.sessionLength; // Convert dem minutes
-                        
-                        let timer = sessMins + ':' + 0 + '0';       
-                        this.setState({
-                            currentLabel:"Session",
-                            currBreakMinutes: this.state.breakLength,
-                            currSessionMinutes: this.state.sessionLength,
-                            currSessionSeconds: 0,
-                            currBreakSeconds: 0,
-                            timeLeft: timer,
-                        })
-                    }
-                 }
-            
-                  // Grabs the correct seconds/minutes values depending on wheather its currently in SESSION or BREAK
-                 minutes = this.state.currentLabel === "Session" ? this.state.currSessionMinutes : this.state.currBreakMinutes;
-                seconds = this.state.currentLabel === "Session" ? this.state.currSessionSeconds : this.state.currBreakSeconds;
+                seconds--
                 
 
-                // If seconds is less or equal to 0, make it 59.
-                 if ( seconds === 0 ) {
+                if ( seconds < 0 ) { // If seconds is less or equal to 0, make it 59.
                     minutes = minutes - 1;
                     seconds = 59;
-                } else { // If its more than 0, reduce by 1.
-                    seconds = seconds - 1;
                 }
+
                 
-                if (this.state.currentLabel === "Session") { // If we're currently in session, update session values
-                    this.setState ({  
-                        currSessionMinutes: minutes,
-                        currSessionSeconds: seconds
-                    })
-                } else {                                   // Else, we update the Break values
-                    this.setState ({  
-                        currBreakMinutes: minutes,
-                        currBreakSeconds: seconds
-                    })
+                if ( minutes < 0 ) {
+                    if (currentLabel === "Session") {
+                        currentLabel = "Break";
+                        minutes = this.state.currBreakMinutes;
+                        seconds = this.state.currBreakSeconds;
+                    } else {
+                        currentLabel = "Session";
+                        minutes = this.state.currSessionMinutes;
+                        seconds = this.state.currSessionSeconds;
+                    }
                 }
 
                 // So after everything is done, if the output minutes is 0 and seconds is 0.... set from session to break.
                  if ( minutes === 0 && seconds === 0 ) {
                     this.sound.current.play();
+                    this.video.current.play();
+                    hide = false;
                  }     
+
+                 this.setState(prevState => {
+                     if (currentLabel === "Session") {
+                         return {
+                            currentLabel: currentLabel,
+                            currSessionMinutes: minutes,
+                            currSessionSeconds: seconds,
+                            currBreakMinutes: breakLength,
+                            currBreakSeconds: 0,
+                            hide: hide
+                         }
+                     } else {
+                         return {
+                            currentLabel: currentLabel,
+                            currBreakMinutes: minutes,
+                            currBreakSeconds: seconds,
+                            currSessionMinutes: sessionLength,
+                            currSessionSeconds: 0,
+                            hide: hide
+                         }
+                     }
+                 });
             }    
         }, 1000);  
     }
@@ -207,31 +212,34 @@ class PomodoroClock extends React.Component {
 
         return (
             <div id='grid-container'>
+                <div id="hah" style={this.hideDisplay()}><img src={clock} alt="oh"></img></div>
+                <div id="clock-container">
+                    <div id="break">
+                        <p id="break-label">Break Length</p>
+                        <button size = '4em' id="break-increment" value="break-increment" onClick={this.handleIncrement}>Increment</button>
+                        <div id="break-length">{this.state.breakLength}</div>
+                        <button size = '4em' id="break-decrement" value="break-decrement" onClick={this.handleDecrement}>Decrement</button>
+                    </div>
                 
-                <h1 id='title'>Pomodoro Clock</h1>
+                    <div id="session">
+                        <p id="session-label">Session Length</p>
+                        <button size = '4em' id="session-increment" value="session-increment" onClick={this.handleIncrement}>Increment</button>
+                        <div id="session-length">{this.state.sessionLength}</div>
+                        <button size = '4em' id="session-decrement" value="session-decrement" onClick={this.handleDecrement}>Decrement</button>
+                    </div>
                 
-                <div id="break">
-                    <h2 id="break-label">Break Length</h2>
-                    <button size = '4em' id="break-increment" value="break-increment" onClick={this.handleIncrement}>Increment</button>
-                    <div id="break-length">{this.state.breakLength}</div>
-                    <button size = '4em' id="break-decrement" value="break-decrement" onClick={this.handleDecrement}>Decrement</button>
+                    <div id="timer">
+                        <h1 id='title'>Pomodoro Clock</h1>
+                        <div id="timer-label">{this.state.currentLabel}</div>
+                        <div id="time-left">{this.convertTimeFormat()}</div>
+                        <button size="4em" id="start_stop" onClick={this.startStopTimer}>Start/Stop</button>
+                        <button size ='4em' id="reset" onClick={this.handleReset}>RESET</button>
+                    </div>
                 </div>
-                
-                <div id="session">
-                    <h2 id="session-label">Session Length</h2>
-                    <button size = '4em' id="session-increment" value="session-increment" onClick={this.handleIncrement}>Increment</button>
-                    <div id="session-length">{this.state.sessionLength}</div>
-                    <button size = '4em' id="session-decrement" value="session-decrement" onClick={this.handleDecrement}>Decrement</button>
-                </div>
-                
-                <div id="timer">
-                    <div id="timer-label">{this.state.currentLabel}</div>
-                    <div id="time-left">{this.convertTimeFormat()}</div>
-                    <button size="4em" id="start_stop" onClick={this.startStopTimer}>Start/Stop</button>
-                    <button size ='4em' id="reset" onClick={this.handleReset}>RESET</button>
-                </div>
-
-                <audio id="beep" ref={this.sound} src="http://www.peter-weinberg.com/files/1014/8073/6015/BeepSound.wav"></audio>
+                {/*Hehehehehehehehehe*/}
+                <div id="countdownVid" style={this.hideDisplay()}><video ref={this.video}  width = "260" height="180" controls autoplay loop><source src={countdown}></source></video></div>
+                <audio id="beep" ref={this.sound} src=""></audio>
+               
             </div>
         )
     }

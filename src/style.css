@@ -2,32 +2,81 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-weight: 700;
+    font-family: sans-serif;
 }
 
 #grid-container {
     height:100vh;
+    display: grid;
+    align-items: center;
+    background: #131419;
+
+}
+
+#clock-container {
+    height: 50%;
+    background: #131419;
+    
+    margin: 30px;
+    padding: 50px 30px;
+    border: 0.5px solid cyan;
+    border-radius: 50px;
+    box-shadow: -3px -3px 7px rgba(255,255,255,0.05),
+                3px 3px 5px rgba(0, 0, 0, 0.5);
+
+    font-size: 60px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+
     display:grid;
+    justify-items: stretch;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 1fr);
     grid-template-areas: 
-    "title title"
+    "timer timer"
+    "timer timer"
     "break session" 
-    "timer timer" 
+    "break session"
 }
 
+button {
+    background: none;
+    color: #ccc;
+    width: 130px;
+    height:50px;
+    border: 1px solid cyan;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 20px;
+    transition: .6s;
+    overflow: hidden;
+    text-align:center;
+}
+
+
+button:focus {
+    outline: none;
+}
 
 #title {
     grid-area: title;
     text-align: center;
-    font-size: 50px;
+
+    font-size: 60px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
 }
 
 
 
 #break {
-    background-color: aqua;
+    font-size: 40px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+
     grid-area: break;
     display: grid;
     justify-items: center;
@@ -39,9 +88,14 @@
 }
 
 #break-label {
+
+    font-size: 40px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+
     grid-area: breakLabel;
     text-align: center;
-    font-size: 40px;
 }
 
 #break-increment {
@@ -51,7 +105,6 @@
 #break-length {
     grid-area: breakLength;
     text-align: center;
-    font-size: 50px;
 }
 
 #break-decrement {
@@ -61,7 +114,11 @@
 
 
 #session {
-    background-color: bisque;
+    font-size: 60px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+
     grid-area: session;
     display: grid;
     justify-items: center;
@@ -74,6 +131,10 @@
 
 #session-label {
     grid-area: sessionLabel;
+    font-size: 40px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
 }
 
 #session-increment {
@@ -91,16 +152,25 @@
 }
 
 #timer {
-    background-color: brown;
+
+    font-size: 40px;
+    color: aqua;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+
+    margin-bottom:30px;
+
     grid-area: timer;
     display: grid;
     justify-items: center;
     align-items: center;
     grid-template-columns: repeat(2,1fr);
     grid-template-areas: 
+    "title title"
     "timerLabel timerLabel"
     "timeLeft timeLeft"
     "startstop reset"
+
 }
 
 #timer-label {
@@ -117,4 +187,75 @@
 
 #reset {
     grid-area: reset;
+}
+
+#countdownVid {
+    grid-area: video;
+    position: absolute;
+    bottom: 0;
+    right:25%;
+    left:50%;
+    margin-left:-150px;
+}
+
+#hah {
+    position: absolute;
+    top: 30px;
+    right:25%;
+    left:55%;
+    margin-left:-150px;
+}
+
+@media screen and (max-width:800px) {
+    #clock-container {
+        height: 60%;
+        font-size: 10px;
+        margin: auto;
+    }
+
+    button {
+        font-size:13px;
+        width: 82px;
+        margin:10px;
+    }
+
+    #title {
+        font-size: 25px;
+    }
+
+    #break {
+        grid-template-columns: repeat(2,1fr);
+        grid-template-areas:
+        "breakLabel breakLabel"
+        "breakLength breakLength "
+        "breakInc breakDec"
+    }
+
+    #break-length {
+        font-size: 25px;
+    }
+
+    #break-label {
+        font-size:20px;
+    }
+
+    #session {
+        grid-template-columns: repeat(2,1fr);
+        grid-template-areas:
+        "sessionLabel sessionLabel"
+        "sessionLength sessionLength "
+        "sessionInc sessionDec"
+    }
+
+    #session-length {
+        font-size: 20px
+    }
+
+    #session-label {
+        font-size: 20px;
+    }
+
+    #timer {
+        font-size: 25px;
+    }
 }
